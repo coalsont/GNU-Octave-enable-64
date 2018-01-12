@@ -1,4 +1,4 @@
-FROM gcr.io/tensorflow/tensorflow:latest-gpu
+FROM ubuntu:16.04
 
 WORKDIR /app/octave
 
