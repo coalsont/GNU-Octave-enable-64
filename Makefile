@@ -26,7 +26,7 @@ endif
 # small helper function to search for a library name pattern for replacing
 fix_soname = grep -Rl '$(2)' $(BUILD_DIR)/$(1) | xargs sed -i "s/$(2)/$(3)/g";
 
-.PHONY: clean
+.PHONY: clean openblas suitesparse qrupdate arpack octave
 
 .EXPORT_ALL_VARIABLES:
 
@@ -84,10 +84,12 @@ $(SRC_CACHE)/suitesparse-$(SUITESPARSE_VER).tar.gz:
 	"http://faculty.cse.tamu.edu/davis/SuiteSparse/SuiteSparse-$(SUITESPARSE_VER).tar.gz" \
 	                && mv SuiteSparse-$(SUITESPARSE_VER).tar.gz $@
 
-$(INSTALL_DIR)/lib/libsuitesparseconfig$(_SONAME_SUFFIX).so: \
+#only run the sed commands once, otherwise it puts the suffix on repeatedly
+$(BUILD_DIR)/suitesparse/fixed_sonames: \
 	$(SRC_CACHE)/suitesparse-$(SUITESPARSE_VER).tar.gz \
 	$(INSTALL_DIR)/lib/libopenblas$(_SONAME_SUFFIX).so
 	@echo -e "\n>>> Untar to $(BUILD_DIR)/suitesparse <<<\n"
+	rm -rf $(BUILD_DIR)/suitesparse
 	cd $(BUILD_DIR) && tar -xf $< \
 	                && mv SuiteSparse suitesparse
 	# fix library names
@@ -97,6 +99,10 @@ $(INSTALL_DIR)/lib/libsuitesparseconfig$(_SONAME_SUFFIX).so: \
 		$(call fix_soname,suitesparse,\-l$(l)\ ,\-l$(l)$(_SONAME_SUFFIX)\ ))
 	$(foreach l,$(SUITESPARSE_LIBS), \
 		$(call fix_soname,suitesparse,\-l$(l)$$,\-l$(l)$(_SONAME_SUFFIX)\ ))
+	touch $(BUILD_DIR)/suitesparse/fixed_sonames
+
+$(INSTALL_DIR)/lib/libsuitesparseconfig$(_SONAME_SUFFIX).so: \
+	$(BUILD_DIR)/suitesparse/fixed_sonames
 	# build and install library
 	cd $(BUILD_DIR)/suitesparse \
 	&& $(MAKE) library \
@@ -138,14 +144,20 @@ $(SRC_CACHE)/qrupdate-$(QRUPDATE_VER).tar.gz:
 	cd $(SRC_CACHE) && wget -q \
 	"http://downloads.sourceforge.net/project/qrupdate/qrupdate/1.2/qrupdate-$(QRUPDATE_VER).tar.gz"
 
-$(INSTALL_DIR)/lib/libqrupdate$(_SONAME_SUFFIX).so: \
-	$(SRC_CACHE)/qrupdate-$(QRUPDATE_VER).tar.gz \
+$(BUILD_DIR)/qrupdate/fixed_sonames: \
+	$(SRC_CACHE)/qrupdate-$(QRUPDATE_VER).tar.gz
+	rm -rf $(BUILD_DIR)/qrupdate
+
 	$(INSTALL_DIR)/lib/libopenblas$(_SONAME_SUFFIX).so
 	@echo -e "\n>>> Untar to $(BUILD_DIR)/qrupdate <<<\n"
 	cd $(BUILD_DIR) && tar -xf $< \
 	                && mv qrupdate-$(QRUPDATE_VER) qrupdate
 	# fix library name
 	$(call fix_soname,qrupdate,libqrupdate,libqrupdate$(_SONAME_SUFFIX))
+	touch $(BUILD_DIR)/qrupdate/fixed_sonames
+
+$(INSTALL_DIR)/lib/libqrupdate$(_SONAME_SUFFIX).so: \
+	$(BUILD_DIR)/qrupdate/fixed_sonames
 	# build and install library
 	cd $(BUILD_DIR)/qrupdate \
 	&& $(MAKE) test    $(QRUPDATE_CONFIG_FLAGS) \
