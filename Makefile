@@ -257,7 +257,7 @@ $(INSTALL_DIR)/bin/octave: $(SRC_CACHE)/octave-$(OCTAVE_VER).tar.gz \
 	@echo -e "\n>>> Octave: configure (1/3) <<<\n"
 	cd $(BUILD_DIR)/octave && ./configure $(OCTAVE_CONFIG_FLAGS)
 	@echo -e "\n>>> Octave: build (2/3) <<<\n"
-	cd $(BUILD_DIR)/octave && $(MAKE) install
+	cd $(BUILD_DIR)/octave && $(MAKE) V=1 install
 	@echo -e "\n>>> Octave: check (3/3) <<<\n"
 	cd $(BUILD_DIR)/octave && $(MAKE) check \
 	                          LD_LIBRARY_PATH='$(INSTALL_DIR)/lib'
@@ -266,9 +266,9 @@ $(INSTALL_DIR)/bin/octave: $(SRC_CACHE)/octave-$(OCTAVE_VER).tar.gz \
 # See workaround in https://github.com/moby/moby/issues/13451
 #
 clean-confdir3: $(INSTALL_DIR)/bin/octave
-	if [ -e build/octave/confdir3 ]; then \
-	  mv build/octave/confdir3 build/xxx; \
-	  rm -rf build/xxx; \
+	if [ -e $(BUILD_DIR)/octave/confdir3 ]; then \
+	  mv $(BUILD_DIR)/octave/confdir3 $(BUILD_DIR)/xxx; \
+	  rm -rf $(BUILD_DIR)/xxx; \
 	fi
 
 octave: clean-confdir3
