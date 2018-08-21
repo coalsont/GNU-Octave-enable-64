@@ -26,7 +26,7 @@ endif
 # small helper function to search for a library name pattern for replacing
 fix_soname = grep -Rl '$(2)' $(BUILD_DIR)/$(1) | xargs sed -i "s/$(2)/$(3)/g";
 
-.PHONY: clean clean-confdir3
+.PHONY: clean
 
 .EXPORT_ALL_VARIABLES:
 
@@ -256,22 +256,19 @@ $(INSTALL_DIR)/bin/octave: $(SRC_CACHE)/octave-$(OCTAVE_VER).tar.gz \
 	                && mv octave-$(OCTAVE_VER) octave
 	@echo -e "\n>>> Octave: configure (1/3) <<<\n"
 	cd $(BUILD_DIR)/octave && ./configure $(OCTAVE_CONFIG_FLAGS)
+	# HACK: Avoid "build/octave/confdir3/...: File name too long"
+	# See workaround in https://github.com/moby/moby/issues/13451
+	if [ -e $(BUILD_DIR)/octave/confdir3/confdir3 ]; then \
+	  mv $(BUILD_DIR)/octave/confdir3/confdir3 $(BUILD_DIR)/octave/xxx; \
+	  rm -rf $(BUILD_DIR)/octave/xxx; \
+	fi
 	@echo -e "\n>>> Octave: build (2/3) <<<\n"
-	cd $(BUILD_DIR)/octave && $(MAKE) V=1 install
+	cd $(BUILD_DIR)/octave && $(MAKE) V=1 && $(MAKE) V=1 install
 	@echo -e "\n>>> Octave: check (3/3) <<<\n"
 	cd $(BUILD_DIR)/octave && $(MAKE) check \
 	                          LD_LIBRARY_PATH='$(INSTALL_DIR)/lib'
 
-# HACK: Avoid "build/octave/confdir3/...: File name too long"
-# See workaround in https://github.com/moby/moby/issues/13451
-#
-clean-confdir3: $(INSTALL_DIR)/bin/octave
-	if [ -e $(BUILD_DIR)/octave/confdir3 ]; then \
-	  mv $(BUILD_DIR)/octave/confdir3 $(BUILD_DIR)/xxx; \
-	  rm -rf $(BUILD_DIR)/xxx; \
-	fi
-
-octave: clean-confdir3
+octave: $(INSTALL_DIR)/bin/octave
 	@echo -e "\n\n"
 	@echo -e " >>> Finished building GNU Octave with 64-bit libraries!!! <<<"
 	@echo -e "\n  To start GNU Octave run:\n\n    $<\n\n"
