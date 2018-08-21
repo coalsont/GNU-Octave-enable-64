@@ -86,8 +86,7 @@ $(SRC_CACHE)/suitesparse-$(SUITESPARSE_VER).tar.gz:
 
 #only run the sed commands once, otherwise it puts the suffix on repeatedly
 $(BUILD_DIR)/suitesparse/fixed_sonames: \
-	$(SRC_CACHE)/suitesparse-$(SUITESPARSE_VER).tar.gz \
-	$(INSTALL_DIR)/lib/libopenblas$(_SONAME_SUFFIX).so
+	$(SRC_CACHE)/suitesparse-$(SUITESPARSE_VER).tar.gz
 	@echo -e "\n>>> Untar to $(BUILD_DIR)/suitesparse <<<\n"
 	rm -rf $(BUILD_DIR)/suitesparse
 	cd $(BUILD_DIR) && tar -xf $< \
@@ -102,7 +101,8 @@ $(BUILD_DIR)/suitesparse/fixed_sonames: \
 	touch $(BUILD_DIR)/suitesparse/fixed_sonames
 
 $(INSTALL_DIR)/lib/libsuitesparseconfig$(_SONAME_SUFFIX).so: \
-	$(BUILD_DIR)/suitesparse/fixed_sonames
+	$(BUILD_DIR)/suitesparse/fixed_sonames \
+	$(INSTALL_DIR)/lib/libopenblas$(_SONAME_SUFFIX).so
 	# build and install library
 	cd $(BUILD_DIR)/suitesparse \
 	&& $(MAKE) library \
@@ -148,7 +148,6 @@ $(BUILD_DIR)/qrupdate/fixed_sonames: \
 	$(SRC_CACHE)/qrupdate-$(QRUPDATE_VER).tar.gz
 	rm -rf $(BUILD_DIR)/qrupdate
 
-	$(INSTALL_DIR)/lib/libopenblas$(_SONAME_SUFFIX).so
 	@echo -e "\n>>> Untar to $(BUILD_DIR)/qrupdate <<<\n"
 	cd $(BUILD_DIR) && tar -xf $< \
 	                && mv qrupdate-$(QRUPDATE_VER) qrupdate
@@ -157,7 +156,8 @@ $(BUILD_DIR)/qrupdate/fixed_sonames: \
 	touch $(BUILD_DIR)/qrupdate/fixed_sonames
 
 $(INSTALL_DIR)/lib/libqrupdate$(_SONAME_SUFFIX).so: \
-	$(BUILD_DIR)/qrupdate/fixed_sonames
+	$(BUILD_DIR)/qrupdate/fixed_sonames \
+	$(INSTALL_DIR)/lib/libopenblas$(_SONAME_SUFFIX).so
 	# build and install library
 	cd $(BUILD_DIR)/qrupdate \
 	&& $(MAKE) test    $(QRUPDATE_CONFIG_FLAGS) \
