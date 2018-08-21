@@ -26,7 +26,7 @@ endif
 # small helper function to search for a library name pattern for replacing
 fix_soname = grep -Rl '$(2)' $(BUILD_DIR)/$(1) | xargs sed -i "s/$(2)/$(3)/g";
 
-.PHONY: clean openblas suitesparse qrupdate arpack octave
+.PHONY: all clean openblas suitesparse qrupdate arpack octave
 
 .EXPORT_ALL_VARIABLES:
 
