@@ -100,6 +100,7 @@ $(BUILD_DIR)/suitesparse/fixed_sonames: \
 		$(call fix_soname,suitesparse,\-l$(l)$$,\-l$(l)$(_SONAME_SUFFIX)\ ))
 	touch $(BUILD_DIR)/suitesparse/fixed_sonames
 
+#hack: ignore system-installed suitesparse_config when building Mongoose by setting it to a path that doesn't exist
 $(INSTALL_DIR)/lib/libsuitesparseconfig$(_SONAME_SUFFIX).so: \
 	$(BUILD_DIR)/suitesparse/fixed_sonames \
 	$(INSTALL_DIR)/lib/libopenblas$(_SONAME_SUFFIX).so
@@ -111,7 +112,7 @@ $(INSTALL_DIR)/lib/libsuitesparseconfig$(_SONAME_SUFFIX).so: \
 	           UMFPACK_CONFIG=-D'LONGBLAS=long' \
 	           CHOLMOD_CONFIG=-D'LONGBLAS=long' \
 	           LDFLAGS='-L$(INSTALL_DIR)/lib -L$(BUILD_DIR)/suitesparse/lib' \
-	           CMAKE_OPTIONS=-D'CMAKE_INSTALL_PREFIX=$(INSTALL_DIR)' \
+	           CMAKE_OPTIONS='-DCMAKE_INSTALL_PREFIX=$(INSTALL_DIR) -DSUITESPARSE_CONFIG_INCLUDE_DIR=/dummy/path' \
 	&& $(MAKE) install \
 	           INSTALL=$(INSTALL_DIR) \
 	           INSTALL_DOC=/tmp/doc \
