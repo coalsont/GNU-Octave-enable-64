@@ -112,7 +112,7 @@ $(INSTALL_DIR)/lib/libsuitesparseconfig$(_SONAME_SUFFIX).so: \
 	           UMFPACK_CONFIG=-D'LONGBLAS=long' \
 	           CHOLMOD_CONFIG=-D'LONGBLAS=long' \
 	           LDFLAGS='-L$(INSTALL_DIR)/lib -L$(BUILD_DIR)/suitesparse/lib' \
-	           CMAKE_OPTIONS='-DCMAKE_INSTALL_PREFIX=$(INSTALL_DIR) -DSUITESPARSE_CONFIG_INCLUDE_DIR=/dummy/path' \
+	           CMAKE_OPTIONS='-DCMAKE_INSTALL_PREFIX=$(INSTALL_DIR)' \
 	&& $(MAKE) install \
 	           INSTALL=$(INSTALL_DIR) \
 	           INSTALL_DOC=/tmp/doc \
@@ -280,7 +280,7 @@ $(INSTALL_DIR)/bin/octave: $(SRC_CACHE)/octave-$(OCTAVE_VER).tar.gz \
 	#HACK: make check gets an octave segfault when reaching chol-cc.tst, ignore it and continue for now
 	@echo -e "\n>>> Octave: check (3/3) <<<\n"
 	cd $(BUILD_DIR)/octave && $(MAKE) check \
-	                          LD_LIBRARY_PATH='$(INSTALL_DIR)/lib' || true
+	                          LD_LIBRARY_PATH='$(INSTALL_DIR)/lib'
 
 octave: $(INSTALL_DIR)/bin/octave
 	@echo -e "\n\n"
