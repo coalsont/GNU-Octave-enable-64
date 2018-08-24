@@ -100,7 +100,6 @@ $(BUILD_DIR)/suitesparse/fixed_sonames: \
 		$(call fix_soname,suitesparse,\-l$(l)$$,\-l$(l)$(_SONAME_SUFFIX)\ ))
 	touch $(BUILD_DIR)/suitesparse/fixed_sonames
 
-#hack: ignore system-installed suitesparse_config when building Mongoose by setting it to a path that doesn't exist
 $(INSTALL_DIR)/lib/libsuitesparseconfig$(_SONAME_SUFFIX).so: \
 	$(BUILD_DIR)/suitesparse/fixed_sonames \
 	$(INSTALL_DIR)/lib/libopenblas$(_SONAME_SUFFIX).so
@@ -277,7 +276,6 @@ $(INSTALL_DIR)/bin/octave: $(SRC_CACHE)/octave-$(OCTAVE_VER).tar.gz \
 	fi
 	@echo -e "\n>>> Octave: build (2/3) <<<\n"
 	cd $(BUILD_DIR)/octave && $(MAKE) V=1 && $(MAKE) V=1 install
-	#HACK: make check gets an octave segfault when reaching chol-cc.tst, ignore it and continue for now
 	@echo -e "\n>>> Octave: check (3/3) <<<\n"
 	cd $(BUILD_DIR)/octave && $(MAKE) check \
 	                          LD_LIBRARY_PATH='$(INSTALL_DIR)/lib'
