@@ -50,7 +50,7 @@ $(INSTALL_DIR)/lib/libopenblas.so: \
 	cd $(BUILD_DIR) && unzip -q $< \
 	                && mv OpenBLAS-$(OPENBLAS_VER) openblas-$(OPENBLAS_VER)
 	cd $(BUILD_DIR)/openblas-$(OPENBLAS_VER) \
-	&& $(MAKE) BINARY=64 INTERFACE64=1 DYNAMIC_ARCH=1 CONSISTENT_FPCSR=1 \
+	&& $(MAKE) BINARY=64 INTERFACE64=1 DYNAMIC_ARCH=0 CONSISTENT_FPCSR=1 \
 	&& $(SUDO_INSTALL) $(MAKE) install PREFIX=$(INSTALL_DIR)
 
 openblas: $(INSTALL_DIR)/lib/libopenblas.so
